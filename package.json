@@ -1,0 +1,19 @@
+{
+  "name": "FileExplorer",
+  "description": "Simple file explorer.",
+  "version": "0.0.1",
+  "main": "index.html",
+  "window": {
+    "toolbar": true,
+    "width": 700,
+    "height": 700
+  },
+  "dependencies": {
+    "angular": "^1.4.5",
+    "async": "^1.4.2",
+    "gm": "^1.18.1",
+    "imagemagick": "^0.1.3",
+    "lodash": "^3.10.1",
+    "randomstring": "^1.1.0"
+  }
+}
