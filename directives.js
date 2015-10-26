@@ -1,4 +1,8 @@
-(function(angular, _) {
+(function(angular) {
+  var fs = require('fs'),
+    path = require('path'),
+    _ = require('lodash');
+
   var module = angular.module('MosaicApp');
   module.directive('libFileChooser', ['$rootScope', function($rootScope) {
     return {
@@ -10,7 +14,6 @@
           var files = elem.find('input')[0].files;
           console.log(elem[0].files);
           var dir = files[0].path;
-          console.log(dir);
           scope.dirPath = dir;
           fs.readdir(dir, function(err, files) {
             if (err) return console.log(err);
@@ -19,7 +22,7 @@
               return _.contains(imgExtensions, path.extname(f).toLowerCase());
             });
             scope.images = _.map(imageFiles, function(im) {
-              return dir + '/' + im;
+              return path.resolve(dir, im);
             });
             $rootScope.$broadcast('selectedDir', scope.images);
           });
@@ -27,4 +30,4 @@
       }
     };
   }]);
-})(angular, _);
+})(angular);
