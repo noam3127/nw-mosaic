@@ -4,11 +4,36 @@ var async = require('async');
 var gm = require('gm').subClass({imageMagick: true});
 var im = require('imagemagick');
 var fs = require('fs');
+var path = require('path');
 var randomstring = require('randomstring');
+var _ = require('lodash');
 var colorThief = new ColorThief();
 var basePath = 'images/large_copy/';
 
-// append default actions to menu for OSX
+var module = angular.module('MosaicApp', ['ngFileUpload', 'snap']);
+module.config(['snapRemoteProvider', function(snapRemoteProvider) {
+  snapRemoteProvider.globalOptions.disable = 'right';
+}]);
+
+module.controller('SidebarCtrl', ['$rootScope', '$scope', 'PhotoLibraryService', function($rootScope, $scope, PhotoLibraryService) {
+  $rootScope.showSidebar = true;
+  $scope.$on('selectedDir', function(event, data) {
+    $scope.imgViews = data.slice(450);
+    $scope.$apply();
+  });
+}]);
+
+
+module.controller('MainCtrl', ['$rootScope', '$scope', 'PhotoLibraryService', function($rootScope, $scope, PhotoLibraryService) {
+  $scope.setLibraryPath = PhotoLibraryService.setBasePath;
+  $scope.setLibrary = function($files) {
+    console.log('$files', $files);
+    PhotoLibraryService.setLibrary = $files[0].path;
+
+    $scope.selectedImage = $files[0].path;
+  };
+
+}]);
 
 var closestRandom = function(color) {
   var distance = 99999999;
@@ -153,10 +178,24 @@ Mosaic.prototype.imageLoaded = function() {
         },
         function finishedRow(err) {
           console.log(rowMap);
+          var _tile;
           rowMap.forEach(function(elem, i) {
-            var _tile = new createjs.Bitmap(basePath + elem.closest);
+            _tile = new createjs.Bitmap(basePath + elem.closest);
             _tile.x = elem.x;
             _tile.y = elem.y;
+            _tile.addEventListener('click', function(event) {
+              _tile.width = 20;
+              _tile.height = 20
+               console.log('hover', bitmap);
+               stage.update();
+            });
+
+            _tile.addEventListener('mouseleave', function(event) {
+               _tile.width = tileW;
+               _tile.height = tileH;
+               console.log('mouseleave', bitmap);
+               stage.update();
+            });
             targetStage.addChild(_tile);
           });
           targetStage.update();
@@ -167,6 +206,11 @@ Mosaic.prototype.imageLoaded = function() {
       )
     },
     function finishedAllRows(err) {
+
+      var overlay = new createjs.Bitmap(this.img);
+     // overlayContext.drawImage(this.img, 0, 0, this.img.width, this.img.height);
+      //overlayContext.globalAlpha = 0.5;
+
       stage.update();
       console.log('ELAPSED', (new Date() / 1000) - time);
     }
@@ -220,6 +264,7 @@ Mosaic.prototype.imageLoaded = function() {
 };
 
 $(document).ready(function() {
+  var btn = document.getElementById('upload-btn');
   btn.addEventListener('change', function() {
     var file = btn.files[0];
     var reader = new FileReader();

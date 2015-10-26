@@ -3,26 +3,75 @@
 <head>
 <title>File Explorer</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="node_modules/angular-snap/angular-snap.css" rel="stylesheet">
 <link href="bootstrap/css/bootstrap.css" rel="stylesheet">
 
 <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"/> -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/material-fullpalette.css" />
-
 <link href="style.css" rel="stylesheet">
+
 <script type="text/javascript" src="js/jquery-1.7.2.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
 
 <script src="http://code.createjs.com/easeljs-0.7.0.min.js"></script>
 <script type="text/javascript" src="color-thief.js"></script>
 <script type="text/javascript" src="colors3.js"></script>
+<script type="text/javascript" src="node_modules/snapjs/snap.js"></script>
+<script type="text/javascript" src="node_modules/angular-snap/angular-snap.js"></script>
+<script type="text/javascript" src="node_modules/ng-file-upload/dist/ng-file-upload.min.js"></script>
+
 <script type="text/javascript" src="main.js"></script>
+<script type="text/javascript" src="service.js"></script>
+<script type="text/javascript" src="directives.js"></script>
 <!-- <link rel="stylesheet" href="bower_components/bootstrap-material-design/dist/css/ripples.css" /> -->
 </head>
-<body>
 
-  <input id="upload-btn" type="file"/>
-  <div class="row" style="background-color: #efefef" >
-    <canvas id="main-canvas" width="1000" height="1500"></canvas>
-    <canvas id="mosaic-canvas" width="1000" height="1500"></canvas>
+<body ng-app="MosaicApp">
+
+  <div id="wrapper" ng-class="{toggled: !showSidebar}">
+
+    <aside snap-drawer id="sidebar-wrapper" class="navbar-material-red container" ng-controller="SidebarCtrl">
+
+      <ul class="sidebar-nav">
+        <li class="sidebar-brand"><a>Mosaic</a></li>
+        <li ng-if="imgViews" ng-repeat="img in imgViews">
+          <div>
+           <img class="img-sample-select"  ng-src="{{img}}"/>{{$index}}
+            <!-- <div class="img-sample-select" ng-style="{'background-image':'url(' + img + ')'}"></div> -->
+          </div>
+        </li>
+        <li>
+
+        </li>
+      </ul>
+
+    </aside>
+
+    <span href="#menu-toggle" ng-click="showSidebar=!showSidebar" id="menu-toggle">
+      <i id="menu-toggle" ng-class="{'mdi-navigation-chevron-left': showSidebar, 'mdi-navigation-chevron-right': !showSidebar}"></i>
+    </span>
+
+    <div id="page-content-wrapper" snap-content ng-controller="MainCtrl">
+      <div class="container-fluid">
+      <!-- <input type="file" ngf-select="setLibrary($files)" ngf-allow-dir="true"/> -->
+       <div class="row">
+
+       <lib-file-chooser></lib-file-chooser>
+      </div>
+       <!-- <input id="library-selector" type="file" msc-on-change="setLibrary" style=""/> -->
+        <a href="#menu-toggle" class="btn btn-default" id="">
+
+          <input id="upload-btn" type="file"/>
+        </a>
+
+        <div class="row">
+          <img id="selectedImage" ng-if="selectedImage" ng-src="{{selectedImage}}"/>
+          <canvas id="main-canvas" style="visibility: hidden"></canvas>
+          <canvas id="mosaic-canvas" width="1200" height="1000"></canvas>
+        </div>
+
+      </div>
+    </div>
   </div>
 
 </body>
